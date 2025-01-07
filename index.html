@@ -130,6 +130,7 @@
     function performSearch() {
       const searchBox = document.getElementById('search-box');
       const query = searchBox.value.trim();
+
       if (!query) {
         alert('Masukkan kata kunci untuk pencarian.');
         return;
@@ -139,16 +140,21 @@
       const resultsContainer = document.getElementById('search-results');
       resultsContainer.style.display = 'block';
 
-      // Mengupdate query pencarian Google
+      // Menemukan elemen input dan tombol pencarian Google
       const gcseInput = document.querySelector('.gsc-input');
-      gcseInput.value = query;
+      if (gcseInput) {
+        gcseInput.value = query; // Mengupdate input pencarian dengan query
+      }
 
-      // Klik tombol pencarian Google secara otomatis
       const gcseButton = document.querySelector('.gsc-search-button');
-      gcseButton.click();
+      if (gcseButton) {
+        gcseButton.click(); // Klik tombol pencarian secara otomatis
+      } else {
+        console.error('Tombol pencarian Google tidak ditemukan!');
+      }
     }
 
-    // Menyembunyikan input dan form pencarian bawaan Google
+    // Menyembunyikan elemen pencarian bawaan Google setelah halaman dimuat
     document.addEventListener('DOMContentLoaded', () => {
       const gcseInputDiv = document.querySelector('.gsc-input-box');
       const gcseForm = document.querySelector('.gsc-search-box');
