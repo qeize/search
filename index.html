@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="X-D - Mesin Telusur Modern untuk Mencari Apa Saja.">
+  <meta name="author" content="X-D Team">
+  <title>X-D - Search Engine</title>
+  <style>
+    /* Reset CSS */
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Arial', sans-serif;
+      line-height: 1.6;
+      background: linear-gradient(120deg, #6a11cb, #2575fc);
+      color: #fff;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      height: 100vh;
+      text-align: center;
+    }
+
+    header {
+      margin-bottom: 20px;
+    }
+
+    header h1 {
+      font-size: 3rem;
+      font-weight: bold;
+    }
+
+    header p {
+      font-size: 1.2rem;
+      margin-top: 10px;
+    }
+
+    .search-container {
+      display: flex;
+      justify-content: center;
+      margin-top: 20px;
+      width: 100%;
+      max-width: 600px;
+    }
+
+    .search-container input[type="text"] {
+      width: 80%;
+      padding: 15px;
+      font-size: 1rem;
+      border: none;
+      border-radius: 25px 0 0 25px;
+      outline: none;
+    }
+
+    .search-container button {
+      width: 20%;
+      padding: 15px;
+      font-size: 1rem;
+      background: #ff6f61;
+      color: #fff;
+      border: none;
+      border-radius: 0 25px 25px 0;
+      cursor: pointer;
+      transition: background-color 0.3s ease;
+    }
+
+    .search-container button:hover {
+      background: #e5564e;
+    }
+
+    .results-container {
+      display: none;
+      background: #fff;
+      color: #333;
+      padding: 20px;
+      margin-top: 30px;
+      max-width: 800px;
+      width: 90%;
+      border-radius: 10px;
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    }
+
+    .results-container a {
+      color: #007BFF;
+      text-decoration: none;
+    }
+
+    .results-container a:hover {
+      text-decoration: underline;
+    }
+
+    footer {
+      margin-top: auto;
+      padding: 10px 0;
+      background: rgba(0, 0, 0, 0.1);
+      width: 100%;
+      text-align: center;
+      font-size: 0.9rem;
+      color: #fff;
+    }
+  </style>
+  <script async src="https://cse.google.com/cse.js?cx=e5a6dcf2fbf25433c"></script>
+</head>
+<body>
+  <header>
+    <h1>X-D</h1>
+    <p>Mesin Telusur Modern untuk Semua Kebutuhan Anda</p>
+  </header>
+
+  <div class="search-container">
+    <input id="search-box" type="text" placeholder="Cari sesuatu...">
+    <button onclick="performSearch()">Cari</button>
+  </div>
+
+  <div class="results-container" id="search-results">
+    <div class="gcse-searchresults-only"></div>
+  </div>
+
+  <footer>
+    &copy; 2025 X-D. Dibuat dengan dedikasi oleh tim X-D.
+  </footer>
+
+  <script>
+    function performSearch() {
+      const searchBox = document.getElementById('search-box');
+      const query = searchBox.value.trim();
+      if (!query) {
+        alert('Masukkan kata kunci untuk pencarian.');
+        return;
+      }
+
+      const resultsContainer = document.getElementById('search-results');
+      resultsContainer.style.display = 'block';
+
+      const gcseInput = document.querySelector('.gsc-input');
+      gcseInput.value = query;
+      const gcseButton = document.querySelector('.gsc-search-button');
+      gcseButton.click();
+    }
+
+    // Menyembunyikan input bawaan Google Custom Search
+    document.addEventListener('DOMContentLoaded', () => {
+      const gcseForm = document.querySelector('.gsc-search-box');
+      if (gcseForm) gcseForm.style.display = 'none';
+    });
+  </script>
+</body>
+</html>
