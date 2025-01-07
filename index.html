@@ -127,6 +127,7 @@
   </footer>
 
   <script>
+    // Fungsi untuk melakukan pencarian
     function performSearch() {
       const searchBox = document.getElementById('search-box');
       const query = searchBox.value.trim();
@@ -140,26 +141,27 @@
       const resultsContainer = document.getElementById('search-results');
       resultsContainer.style.display = 'block';
 
-      // Menemukan elemen input dan tombol pencarian Google
+      // Memastikan elemen pencarian muncul
       const gcseInput = document.querySelector('.gsc-input');
       if (gcseInput) {
         gcseInput.value = query; // Mengupdate input pencarian dengan query
       }
 
+      // Klik tombol pencarian bawaan Google secara otomatis
       const gcseButton = document.querySelector('.gsc-search-button');
       if (gcseButton) {
-        gcseButton.click(); // Klik tombol pencarian secara otomatis
+        gcseButton.click();
       } else {
         console.error('Tombol pencarian Google tidak ditemukan!');
       }
     }
 
-    // Menyembunyikan elemen pencarian bawaan Google setelah halaman dimuat
+    // Menyembunyikan form pencarian bawaan Google yang muncul pertama kali
     document.addEventListener('DOMContentLoaded', () => {
-      const gcseInputDiv = document.querySelector('.gsc-input-box');
       const gcseForm = document.querySelector('.gsc-search-box');
-      if (gcseInputDiv) gcseInputDiv.style.display = 'none';
-      if (gcseForm) gcseForm.style.display = 'none';
+      if (gcseForm) {
+        gcseForm.style.display = 'none';  // Menyembunyikan form default
+      }
     });
   </script>
 </body>
