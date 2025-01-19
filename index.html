@@ -1,355 +1,138 @@
-<!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Seira AI Assistant | Vampire Nobility</title>
-    
-    <!-- External CSS -->
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/tailwindcss/2.2.19/tailwind.min.css" rel="stylesheet">
-    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/styles/github-dark.min.css">
-    
-    <style>
-        :root {
-            --primary: #9333ea;
-            --primary-dark: #7e22ce;
-            --accent: #ec4899;
-            --bg-light: #ffffff;
-            --bg-dark: #0f172a;
-            --text-light: #374151;
-            --text-dark: #e5e7eb;
-        }
-
-        body {
-            font-family: 'Inter', sans-serif;
-            transition: all 0.3s ease;
-        }
-
-        .title-font {
-            font-family: 'Cinzel', serif;
-        }
-
-        .light-pattern {
-            background-image: linear-gradient(rgba(255, 255, 255, 0.9), rgba(255, 255, 255, 0.9)),
-                            url('https://cdn.jsdelivr.net/gh/veccy/assets@main/patterns/light-pattern.png');
-        }
-
-        .dark-pattern {
-            background-image: linear-gradient(rgba(15, 23, 42, 0.95), rgba(15, 23, 42, 0.95)),
-                            url('https://cdn.jsdelivr.net/gh/veccy/assets@main/patterns/dark-pattern.png');
-        }
-
-        /* Custom Scrollbar */
-        ::-webkit-scrollbar {
-            width: 8px;
-            height: 8px;
-        }
-
-        ::-webkit-scrollbar-track {
-            background: transparent;
-        }
-
-        ::-webkit-scrollbar-thumb {
-            background: #cbd5e1;
-            border-radius: 4px;
-        }
-
-        .dark ::-webkit-scrollbar-thumb {
-            background: #475569;
-        }
-
-        /* AI Selection Menu */
-        .ai-select {
-            background: rgba(255, 255, 255, 0.1);
-            backdrop-filter: blur(10px);
-            border: 1px solid rgba(255, 255, 255, 0.2);
-        }
-
-        .dark .ai-select {
-            background: rgba(0, 0, 0, 0.2);
-            border-color: rgba(255, 255, 255, 0.1);
-        }
-
-        /* Message Animations */
-        .message {
-            opacity: 0;
-            transform: translateY(20px);
-            animation: fadeIn 0.3s ease forwards;
-        }
-
-        @keyframes fadeIn {
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
-        }
-
-        /* Avatar Styles */
-        .avatar {
-            width: 40px;
-            height: 40px;
-            border-radius: 50%;
-            box-shadow: 0 0 20px rgba(147, 51, 234, 0.3);
-        }
-        
-    </style>
+    <meta charset="utf-8"/>
+    <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+    <title>Seira AI Assistant</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css" rel="stylesheet"/>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@700&display=swap" rel="stylesheet">
 </head>
-<body class="light-pattern text-gray-800">
-    <div class="min-h-screen">
-        <!-- Header -->
-        <header class="bg-white/80 backdrop-blur-lg shadow-lg dark:bg-gray-900/80 dark:text-white sticky top-0 z-50">
-            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
-                <div class="flex justify-between items-center">
-                    <div class="flex items-center space-x-4 avatar-container">
-                        <img id="aiAvatar" class="avatar" src="https://cdn.jsdelivr.net/gh/veccy/assets@main/avatars/seira-avatar.png" alt="AI Avatar">
-                        <div>
-                            <h1 id="header-name" class="title-font text-2xl font-semibold text-purple-600 dark:text-purple-400">Seira</h1>
-                            <p class="text-sm text-gray-600 dark:text-gray-400">Noble AI Assistant</p>
-                        </div>
-                    </div>
-                    
-                    <div class="flex items-center space-x-6">
-                        <!-- AI Model Selection -->
-                        <select id="aiModel" class="ai-select px-4 py-2 rounded-lg text-sm font-medium focus:outline-none focus:ring-2 focus:ring-purple-500">
-                            <option value="seira">Seira</option>
-                            <option value="chatgpt">ChatGPT</option>
-                            <option value="gemini">Gemini</option>
-                        </select>
-
-                        <!-- Theme Toggle -->
-                        <button id="themeToggle" class="p-2 rounded-lg hover:bg-gray-200 dark:hover:bg-gray-800">
-                            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" 
-                                    d="M20.354 15.354A9 9 0 018.646 3.646A9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z"/>
-                            </svg>
-                        </button>
-
-                        <!-- Clear Chat -->
-                        <button id="clearChat" class="p-2 rounded-lg hover:bg-gray-200 dark:hover:bg-gray-800">
-                            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" 
-                                    d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 
-                                    m5 
-                                    v6m4 
-                                    v6m1 
-                                    V4a1 
-                                    a1h4a1a1v3M4 
-                                    m16"/>
-                            </svg>
-                        </button>
-                    </div>
-                </div>
-            </div>
-        </header>
-
-        <!-- Main Chat Area -->
-        <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-            <div id="chat" class="space-y-6 mb-24"></div>
-        </main>
-
-        <!-- Input Area -->
-        <div class="fixed bottom-0 left-0 right-0 bg-white/80 dark:bg-gray-900/80 backdrop-blur-lg border-t dark:border-gray-800 p-4">
-            <div class="max-w-7xl mx-auto">
-                <form id="chatForm" class="flex space-x-4">
-                    <div class="flex-1 relative">
-                        <textarea 
-                            id="userInput"
-                            class="w-full px-4 py-3 rounded-lg border border-purple-200 focus:border-purple-500 focus:ring-2 focus:ring-purple-200 dark:bg-gray-800 dark:border-gray-700 dark:text-white resize-none"
-                            placeholder=""
-                            rows="1"
-                            style="min-height:44px; max-height:200px;"
-                        ></textarea>
-                    </div>
-                    <button 
-                        type="submit"
-                        class="px-6 py-2 bg-gradient-to-r from-purple-600 to-pink-500 text-white rounded-lg hover:opacity-90 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:ring-offset-2 disabled:opacity-50 transition-all"
-                    >
-                        Send
-                    </button>
-                </form>
+<body class="bg-white flex flex-col h-screen">
+    <!-- Header -->
+    <header class="flex items-center justify-between p-4 bg-white shadow-md">
+        <div class="flex items-center">
+            <img id="ai-image" alt="Anime vampire character" class="rounded-full" height="40" src="https://storage.googleapis.com/a1aa/image/fYEGR2xcDX23ECwtebN3LUXnsONfUGUjSkiPw3VZfWM8Q3aQB.jpg" width="40"/>
+            <div class="ml-2">
+                <h1 id="ai-name" class="text-xl font-bold text-purple-600" style="font-family: 'Roboto', sans-serif;">Seira</h1>
+                <p class="text-sm text-gray-500">Noble AI Assistant</p>
             </div>
         </div>
-    </div>
-
-    <!-- External Scripts -->
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/marked/4.3.0/marked.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/highlight.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.29.4/moment.min.js"></script>
+        <div class="flex items-center space-x-4">
+            <div class="relative">
+                <select id="ai-selector" class="appearance-none bg-gray-100 border border-gray-300 text-gray-700 py-2 px-4 pr-8 rounded leading-tight focus:outline-none focus:bg-white focus:border-gray-500">
+                    <option value="seira">Seira</option>
+                    <option value="chatgpt">ChatGPT</option>
+                    <option value="gemini">Gemini</option>
+                </select>
+                <div class="pointer-events-none absolute inset-y-0 right-0 flex items-center px-2 text-gray-700">
+                    <i class="fas fa-chevron-down"></i>
+                </div>
+            </div>
+            <i id="theme-toggle" class="fas fa-moon text-gray-700 cursor-pointer"></i>
+            <i id="delete-messages" class="fas fa-trash text-gray-700 cursor-pointer"></i>
+        </div>
+    </header>
+    <!-- Main Content -->
+    <main id="chat-container" class="flex-grow p-4 overflow-y-auto">
+        <!-- Chat messages will appear here -->
+    </main>
+    <!-- Footer -->
+    <footer class="p-4 bg-white shadow-md flex items-center">
+        <input id="user-input" class="flex-grow border border-gray-300 rounded-l-full py-2 px-4 focus:outline-none focus:ring-2 focus:ring-purple-600" placeholder="Ask Seira anything..." type="text"/>
+        <button id="send-button" class="bg-gradient-to-r from-purple-500 to-pink-500 text-white rounded-r-full py-2 px-6">Send</button>
+    </footer>
 
     <script>
-        class ChatApp {
-            constructor() {
-                this.apiKeys = {
-                    seira: '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',
-                    chatgpt: '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',
-                    gemini: 'AIzaSyC4Bg_fgswZsV-nrox9eiWd1sqoJ9WXsOo'
-                };
-                this.messages = [];
-                this.currentModel = 'seira';
-                this.initializeUI();
-                this.setupTheme();
-                this.setupMarked();
-                this.updateAvatarAndTitle();
+        const aiData = {
+            seira: {
+                name: 'Seira',
+                image: 'https://storage.googleapis.com/a1aa/image/fYEGR2xcDX23ECwtebN3LUXnsONfUGUjSkiPw3VZfWM8Q3aQB.jpg',
+                apiKey: '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'
+            },
+            chatgpt: {
+                name: 'ChatGPT',
+                image: 'https://storage.googleapis.com/a1aa/image/2Q==.jpg',
+                apiKey: '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'
+            },
+            gemini: {
+                name: 'Gemini',
+                image: 'https://storage.googleapis.com/a1aa/image/3Q==.jpg',
+                apiKey: 'AIzaSyC4Bg_fgswZsV-nrox9eiWd1sqoJ9WXsOo'
             }
+        };
 
-            initializeUI() {
-                this.chatContainer = document.getElementById('chat');
-                this.form = document.getElementById('chatForm');
-                this.input = document.getElementById('userInput');
-                this.clearButton = document.getElementById('clearChat');
-                this.themeToggle = document.getElementById('themeToggle');
-                this.modelSelect = document.getElementById('aiModel');
+        document.getElementById('ai-selector').addEventListener('change', function() {
+            const selectedAI = this.value;
+            document.getElementById('ai-name').textContent = aiData[selectedAI].name;
+            document.getElementById('ai-image').src = aiData[selectedAI].image;
+        });
 
-                this.form.addEventListener('submit', this.handleSubmit.bind(this));
-                this.clearButton.addEventListener('click', this.clearChat.bind(this));
-                this.themeToggle.addEventListener('click', this.toggleTheme.bind(this));
-                
-                this.modelSelect.addEventListener('change', (e) => {
-                    this.currentModel = e.target.value;
-                    this.updateAvatarAndTitle();
-                    this.input.placeholder = `Ask ${this.currentModel.charAt(0).toUpperCase() + this.currentModel.slice(1)} anything...`;
-                });
+        document.getElementById('send-button').addEventListener('click', async function() {
+            const userInput = document.getElementById('user-input').value;
+            const aiSelected = document.getElementById('ai-selector').value;
+            const apiKey = aiData[aiSelected].apiKey;
 
-                const savedMessages = localStorage.getItem('chatMessages');
-                if (savedMessages) {
-                    this.messages = JSON.parse(savedMessages);
-                    this.messages.forEach(msg => this.addMessageToUI(msg));
+            if (userInput.trim() !== '') {
+                const chatContainer = document.getElementById('chat-container');
+
+                // Add user message
+                const userMessage = document.createElement('div');
+                userMessage.className = 'flex items-center mb-4';
+                userMessage.innerHTML = `
+                    <img alt="User avatar" class="rounded-full h-10 w-10" src="https://placehold.co/40x40" />
+                    <div class="ml-2 p-2 bg-gray-200 rounded-lg">
+                        <p class="text-sm text-gray-700">User</p>
+                        <p>${userInput}</p>
+                    </div>
+                `;
+                chatContainer.appendChild(userMessage);
+
+                // Fetch AI response
+                const aiMessage = document.createElement('div');
+                aiMessage.className = 'flex items-center mb-4';
+                aiMessage.innerHTML = `
+                    <img alt="${aiData[aiSelected].name} avatar" class="rounded-full h-10 w-10" src="${aiData[aiSelected].image}" />
+                    <div class="ml-2 p-2 bg-purple-200 rounded-lg">
+                        <p class="text-sm text-purple-700">${aiData[aiSelected].name}</p>
+                        <p>Loading...</p>
+                    </div>
+                `;
+                chatContainer.appendChild(aiMessage);
+
+                try {
+                    const response = await fetch('https://api.openai.com/v1/engines/davinci-codex/completions', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'Authorization': `Bearer ${apiKey}`
+                        },
+                        body: JSON.stringify({
+                            prompt: userInput,
+                            max_tokens: 150
+                        })
+                    });
+                    const data = await response.json();
+                    aiMessage.querySelector('p:nth-child(2)').textContent = data.choices[0].text.trim();
+                } catch (error) {
+                    aiMessage.querySelector('p:nth-child(2)').textContent = 'Error fetching response.';
                 }
-                
-                // Set initial placeholder
-                this.input.placeholder = `Ask ${this.currentModel.charAt(0).toUpperCase() + this.currentModel.slice(1)} anything...`;
-                
-                // Update avatar and title initially
-                this.updateAvatarAndTitle();
+
+                // Clear input
+                document.getElementById('user-input').value = '';
+                chatContainer.scrollTop = chatContainer.scrollHeight;
+            } else {
+                alert('Please enter a message.');
             }
+        });
 
-            setupMarked() {
-                marked.setOptions({
-                    highlight(code, lang) {
-                        if (lang && hljs.getLanguage(lang)) {
-                            return hljs.highlight(code, { language: lang }).value;
-                        }
-                        return hljs.highlightAuto(code).value;
-                    },
-                    breaks: true
-                });
-            }
+        document.getElementById('theme-toggle').addEventListener('click', function() {
+            document.body.classList.toggle('bg-gray-900');
+            document.body.classList.toggle('text-white');
+        });
 
-            setupTheme() {
-                const isDark = localStorage.getItem('darkMode') === 'true';
-                if (isDark) {
-                    document.documentElement.classList.add('dark');
-                    document.body.classList.remove('light-pattern');
-                    document.body.classList.add('dark-pattern');
-                }
-            }
-
-            toggleTheme() {
-                document.documentElement.classList.toggle('dark');
-                document.body.classList.toggle('light-pattern');
-                document.body.classList.toggle('dark-pattern');
-                localStorage.setItem('darkMode', document.documentElement.classList.contains('dark'));
-            }
-
-            updateAvatarAndTitle() {
-              const avatarMap = {
-                  seira: 'https://cdn.jsdelivr.net/gh/veccy/assets@main/avatars/seira-avatar.png',
-                  chatgpt: 'https://via.placeholder.com/100', // Replace with actual ChatGPT avatar
-                  gemini: 'https://via.placeholder.com/100' // Replace with actual Gemini avatar
-              };
-              const nameMap = {
-                  seira: 'Seira',
-                  chatgpt: 'ChatGPT',
-                  gemini: 'Gemini'
-              };
-              
-              document.getElementById('aiAvatar').src = avatarMap[this.currentModel];
-              document.getElementById('header-name').textContent = nameMap[this.currentModel];
-          }
-
-          clearChat() {
-              this.messages = [];
-              this.chatContainer.innerHTML = '';
-              localStorage.removeItem('chatMessages');
-          }
-
-          async handleSubmit(e) {
-              e.preventDefault();
-              const message = this.input.value.trim();
-              if (!message) return;
-
-              const userMessage = { role: 'user', content: message, timestamp: new Date() };
-              this.addMessageToUI(userMessage);
-              this.messages.push(userMessage);
-
-              // Clear input
-              this.input.value = '';
-
-              try {
-                  let response;
-
-                  // Simulate a delay for the AI response
-                  await new Promise(resolve => setTimeout(resolve, Math.random() * (1500 - 500) + 500));
-
-                  // Get AI response based on selected model
-                  if (this.currentModel === 'gemini') {
-                      response = await this.getGeminiResponse(message);
-                  } else if (this.currentModel === 'chatgpt') {
-                      response = await this.getOpenAIResponse(message);
-                  } else { // Default to Seira
-                      response = await this.getSeiraResponse(message);
-                  }
-
-                  const aiMessage = { 
-                      role: 'assistant', 
-                      content: response || "I'm sorry, I didn't understand that.", 
-                      timestamp: new Date(),
-                      model: this.currentModel
-                  };
-
-                  // Add AI message
-                  this.addMessageToUI(aiMessage);
-                  this.messages.push(aiMessage);
-
-                  // Save to localStorage
-                  localStorage.setItem('chatMessages', JSON.stringify(this.messages));
-                  
-              } catch (error) {
-                  console.error('Error:', error);
-                  alert('Failed to get response from AI.');
-                  
-              } finally { 
-                 // Re-enable input after processing
-                 this.input.disabled = false; 
-             }
-         }
-         
-         addMessageToUI(message) {
-             const messageDiv = document.createElement('div');
-             messageDiv.className = `message ${message.role}`;
-             messageDiv.innerText = `${message.role === 'user' ? 'You' : message.model} (${moment(message.timestamp).format("HH:mm")}): ${message.content}`;
-             this.chatContainer.appendChild(messageDiv);
-             messageDiv.scrollIntoView({ behavior: "smooth", block: "end", inline: "nearest" });
-         }
-         
-         async getOpenAIResponse(message) {
-             // Simulate an API call to OpenAI
-             return "This is a simulated response from OpenAI for your message.";
-         }
-         
-         async getGeminiResponse(message) {
-             // Simulate an API call to Gemini
-             return "This is a simulated response from Gemini for your message.";
-         }
-         
-         async getSeiraResponse(message) {
-             // Simulate an API call to Seira
-             return "This is a simulated response from Seira for your message.";
-         }
-     }
-     
-     const chatApp = new ChatApp();
-   </script>
+        document.getElementById('delete-messages').addEventListener('click', function() {
+            document.getElementById('chat-container').innerHTML = '';
+        });
+    </script>
 </body>
 </html>
