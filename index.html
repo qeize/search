@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>AI Assistant | Vampire Nobility</title>
+    <title>Seira AI Assistant | Vampire Nobility</title>
     
     <!-- External CSS -->
     <link href="https://cdnjs.cloudflare.com/ajax/libs/tailwindcss/2.2.19/tailwind.min.css" rel="stylesheet">
@@ -11,42 +11,88 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/styles/github-dark.min.css">
     
     <style>
-        /* ... (CSS sebelumnya tetap sama) ... */
+        :root {
+            --primary: #9333ea;
+            --primary-dark: #7e22ce;
+            --accent: #ec4899;
+            --bg-light: #ffffff;
+            --bg-dark: #0f172a;
+            --text-light: #374151;
+            --text-dark: #e5e7eb;
+        }
 
-        /* Tambahan CSS untuk avatar */
-        .ai-avatar {
+        body {
+            font-family: 'Inter', sans-serif;
+            transition: all 0.3s ease;
+        }
+
+        .title-font {
+            font-family: 'Cinzel', serif;
+        }
+
+        .light-pattern {
+            background-image: linear-gradient(rgba(255, 255, 255, 0.9), rgba(255, 255, 255, 0.9)),
+                            url('https://cdn.jsdelivr.net/gh/veccy/assets@main/patterns/light-pattern.png');
+        }
+
+        .dark-pattern {
+            background-image: linear-gradient(rgba(15, 23, 42, 0.95), rgba(15, 23, 42, 0.95)),
+                            url('https://cdn.jsdelivr.net/gh/veccy/assets@main/patterns/dark-pattern.png');
+        }
+
+        /* Custom Scrollbar */
+        ::-webkit-scrollbar {
+            width: 8px;
+            height: 8px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: transparent;
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: #cbd5e1;
+            border-radius: 4px;
+        }
+
+        .dark ::-webkit-scrollbar-thumb {
+            background: #475569;
+        }
+
+        /* AI Selection Menu */
+        .ai-select {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .dark .ai-select {
+            background: rgba(0, 0, 0, 0.2);
+            border-color: rgba(255, 255, 255, 0.1);
+        }
+
+        /* Message Animations */
+        .message {
+            opacity: 0;
+            transform: translateY(20px);
+            animation: fadeIn 0.3s ease forwards;
+        }
+
+        @keyframes fadeIn {
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* Avatar Styles */
+        .avatar {
             width: 40px;
             height: 40px;
-            background-size: cover;
             border-radius: 50%;
             box-shadow: 0 0 20px rgba(147, 51, 234, 0.3);
         }
-
-        .ai-avatar[data-ai="seira"] {
-            background-image: url('https://i.pinimg.com/736x/d7/94/ad/d794ad6d2516c559eb54687f7db48f35.jpg');
-        }
-
-        .ai-avatar[data-ai="chatgpt"] {
-            background-image: url('https://upload.wikimedia.org/wikipedia/commons/thumb/0/04/ChatGPT_logo.svg/1200px-ChatGPT_logo.svg.png');
-        }
-
-        .ai-avatar[data-ai="gemini"] {
-            background-image: url('https://seeklogo.com/images/G/google-gemini-logo-A5787B1835-seeklogo.com.png');
-        }
-
-        .user-avatar {
-            background-image: url('https://i.pinimg.com/originals/34/62/d2/3462d24f4a54c1d5e49f5123b0efb4d5.jpg');
-        }
-
-        /* Message deletion button */
-        .message-delete {
-            opacity: 0;
-            transition: opacity 0.2s;
-        }
-
-        .message:hover .message-delete {
-            opacity: 1;
-        }
+        
     </style>
 </head>
 <body class="light-pattern text-gray-800">
@@ -55,11 +101,11 @@
         <header class="bg-white/80 backdrop-blur-lg shadow-lg dark:bg-gray-900/80 dark:text-white sticky top-0 z-50">
             <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
                 <div class="flex justify-between items-center">
-                    <div class="flex items-center space-x-4">
-                        <div id="aiAvatar" class="ai-avatar" data-ai="seira"></div>
+                    <div class="flex items-center space-x-4 avatar-container">
+                        <img id="aiAvatar" class="avatar" src="https://cdn.jsdelivr.net/gh/veccy/assets@main/avatars/seira-avatar.png" alt="AI Avatar">
                         <div>
-                            <h1 id="aiName" class="title-font text-2xl font-semibold text-purple-600 dark:text-purple-400">Seira</h1>
-                            <p id="aiDescription" class="text-sm text-gray-600 dark:text-gray-400">Noble AI Assistant</p>
+                            <h1 id="header-name" class="title-font text-2xl font-semibold text-purple-600 dark:text-purple-400">Seira</h1>
+                            <p class="text-sm text-gray-600 dark:text-gray-400">Noble AI Assistant</p>
                         </div>
                     </div>
                     
@@ -73,18 +119,23 @@
 
                         <!-- Theme Toggle -->
                         <button id="themeToggle" class="p-2 rounded-lg hover:bg-gray-200 dark:hover:bg-gray-800">
-                            <svg class="w-6 h-6 dark:hidden" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z"/>
-                            </svg>
-                            <svg class="w-6 h-6 hidden dark:block" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z"/>
+                            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" 
+                                    d="M20.354 15.354A9 9 0 018.646 3.646A9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z"/>
                             </svg>
                         </button>
 
                         <!-- Clear Chat -->
                         <button id="clearChat" class="p-2 rounded-lg hover:bg-gray-200 dark:hover:bg-gray-800">
                             <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/>
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" 
+                                    d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 
+                                    m5 
+                                    v6m4 
+                                    v6m1 
+                                    V4a1 
+                                    a1h4a1a1v3M4 
+                                    m16"/>
                             </svg>
                         </button>
                     </div>
@@ -105,9 +156,9 @@
                         <textarea 
                             id="userInput"
                             class="w-full px-4 py-3 rounded-lg border border-purple-200 focus:border-purple-500 focus:ring-2 focus:ring-purple-200 dark:bg-gray-800 dark:border-gray-700 dark:text-white resize-none"
-                            placeholder="Ask Seira anything..."
+                            placeholder=""
                             rows="1"
-                            style="min-height: 44px; max-height: 200px;"
+                            style="min-height:44px; max-height:200px;"
                         ></textarea>
                     </div>
                     <button 
@@ -120,27 +171,6 @@
             </div>
         </div>
     </div>
-
-    <!-- Message Template -->
-    <template id="messageTemplate">
-        <div class="message flex space-x-4">
-            <div class="flex-shrink-0">
-                <div class="ai-avatar w-10 h-10 rounded-full bg-cover"></div>
-            </div>
-            <div class="flex-grow">
-                <div class="flex items-center justify-between">
-                    <span class="font-medium"></span>
-                    <span class="text-sm text-gray-500"></span>
-                </div>
-                <div class="mt-1 prose dark:prose-invert"></div>
-            </div>
-            <button class="message-delete p-1 rounded-full hover:bg-gray-200 dark:hover:bg-gray-700">
-                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
-                </svg>
-            </button>
-        </div>
-    </template>
 
     <!-- External Scripts -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/marked/4.3.0/marked.min.js"></script>
@@ -155,76 +185,58 @@
                     chatgpt: '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',
                     gemini: 'AIzaSyC4Bg_fgswZsV-nrox9eiWd1sqoJ9WXsOo'
                 };
-
-                this.aiInfo = {
-                    seira: {
-                        name: 'Seira',
-                        description: 'Noble AI Assistant',
-                        avatarUrl: 'https://i.pinimg.com/736x/d7/94/ad/d794ad6d2516c559eb54687f7db48f35.jpg'
-                    },
-                    chatgpt: {
-                        name: 'ChatGPT',
-                        description: 'OpenAI Assistant',
-                        avatarUrl: 'https://upload.wikimedia.org/wikipedia/commons/thumb/0/04/ChatGPT_logo.svg/1200px-ChatGPT_logo.svg.png'
-                    },
-                    gemini: {
-                        name: 'Gemini',
-                        description: 'Google AI Assistant',
-                        avatarUrl: 'https://seeklogo.com/images/G/google-gemini-logo-A5787B1835-seeklogo.com.png'
-                    }
-                };
-
                 this.messages = [];
                 this.currentModel = 'seira';
                 this.initializeUI();
-                this.loadTheme();
-                this.loadMessages();
+                this.setupTheme();
+                this.setupMarked();
+                this.updateAvatarAndTitle();
             }
 
             initializeUI() {
-                // Initialize UI elements
-                this.elements = {
-                    chat: document.getElementById('chat'),
-                    form: document.getElementById('chatForm'),
-                    input: document.getElementById('userInput'),
-                    aiModel: document.getElementById('aiModel'),
-                    themeToggle: document.getElementById('themeToggle'),
-                    clearChat: document.getElementById('clearChat'),
-                    aiAvatar: document.getElementById('aiAvatar'),
-                    aiName: document.getElementById('aiName'),
-                    aiDescription: document.getElementById('aiDescription')
-                };
+                this.chatContainer = document.getElementById('chat');
+                this.form = document.getElementById('chatForm');
+                this.input = document.getElementById('userInput');
+                this.clearButton = document.getElementById('clearChat');
+                this.themeToggle = document.getElementById('themeToggle');
+                this.modelSelect = document.getElementById('aiModel');
 
-                // Add event listeners
-                this.elements.form.addEventListener('submit', (e) => this.handleSubmit(e));
-                this.elements.input.addEventListener('input', () => this.autoResizeInput());
-                this.elements.aiModel.addEventListener('change', (e) => this.changeAI(e.target.value));
-                this.elements.themeToggle.addEventListener('click', () => this.toggleTheme());
-                this.elements.clearChat.addEventListener('click', () => this.clearChat());
+                this.form.addEventListener('submit', this.handleSubmit.bind(this));
+                this.clearButton.addEventListener('click', this.clearChat.bind(this));
+                this.themeToggle.addEventListener('click', this.toggleTheme.bind(this));
+                
+                this.modelSelect.addEventListener('change', (e) => {
+                    this.currentModel = e.target.value;
+                    this.updateAvatarAndTitle();
+                    this.input.placeholder = `Ask ${this.currentModel.charAt(0).toUpperCase() + this.currentModel.slice(1)} anything...`;
+                });
 
-                // Initialize marked.js
+                const savedMessages = localStorage.getItem('chatMessages');
+                if (savedMessages) {
+                    this.messages = JSON.parse(savedMessages);
+                    this.messages.forEach(msg => this.addMessageToUI(msg));
+                }
+                
+                // Set initial placeholder
+                this.input.placeholder = `Ask ${this.currentModel.charAt(0).toUpperCase() + this.currentModel.slice(1)} anything...`;
+                
+                // Update avatar and title initially
+                this.updateAvatarAndTitle();
+            }
+
+            setupMarked() {
                 marked.setOptions({
-                    breaks: true,
-                    highlight: (code, lang) => {
+                    highlight(code, lang) {
                         if (lang && hljs.getLanguage(lang)) {
                             return hljs.highlight(code, { language: lang }).value;
                         }
                         return hljs.highlightAuto(code).value;
-                    }
+                    },
+                    breaks: true
                 });
             }
 
-            changeAI(model) {
-                this.currentModel = model;
-                const info = this.aiInfo[model];
-                
-                this.elements.aiAvatar.dataset.ai = model;
-                this.elements.aiName.textContent = info.name;
-                this.elements.aiDescription.textContent = info.description;
-                this.elements.input.placeholder = `Ask ${info.name} anything...`;
-            }
-
-            loadTheme() {
+            setupTheme() {
                 const isDark = localStorage.getItem('darkMode') === 'true';
                 if (isDark) {
                     document.documentElement.classList.add('dark');
@@ -240,24 +252,104 @@
                 localStorage.setItem('darkMode', document.documentElement.classList.contains('dark'));
             }
 
-            loadMessages() {
-                const saved = localStorage.getItem('chatMessages');
-                if (saved) {
-                    this.messages = JSON.parse(saved);
-                    this.messages.forEach(msg => this.addMessageToUI(msg));
-                }
-            }
+            updateAvatarAndTitle() {
+              const avatarMap = {
+                  seira: 'https://cdn.jsdelivr.net/gh/veccy/assets@main/avatars/seira-avatar.png',
+                  chatgpt: 'https://via.placeholder.com/100', // Replace with actual ChatGPT avatar
+                  gemini: 'https://via.placeholder.com/100' // Replace with actual Gemini avatar
+              };
+              const nameMap = {
+                  seira: 'Seira',
+                  chatgpt: 'ChatGPT',
+                  gemini: 'Gemini'
+              };
+              
+              document.getElementById('aiAvatar').src = avatarMap[this.currentModel];
+              document.getElementById('header-name').textContent = nameMap[this.currentModel];
+          }
 
-            saveMessages() {
-                localStorage.setItem('chatMessages', JSON.stringify(this.messages));
-            }
+          clearChat() {
+              this.messages = [];
+              this.chatContainer.innerHTML = '';
+              localStorage.removeItem('chatMessages');
+          }
 
-            clearChat() {
-                this.messages = [];
-                this.elements.chat.innerHTML = '';
-                this.saveMessages();
-            }
+          async handleSubmit(e) {
+              e.preventDefault();
+              const message = this.input.value.trim();
+              if (!message) return;
 
-            async handleSubmit(e) {
-                e.preventDefault();
-                const message</antArtifact>
+              const userMessage = { role: 'user', content: message, timestamp: new Date() };
+              this.addMessageToUI(userMessage);
+              this.messages.push(userMessage);
+
+              // Clear input
+              this.input.value = '';
+
+              try {
+                  let response;
+
+                  // Simulate a delay for the AI response
+                  await new Promise(resolve => setTimeout(resolve, Math.random() * (1500 - 500) + 500));
+
+                  // Get AI response based on selected model
+                  if (this.currentModel === 'gemini') {
+                      response = await this.getGeminiResponse(message);
+                  } else if (this.currentModel === 'chatgpt') {
+                      response = await this.getOpenAIResponse(message);
+                  } else { // Default to Seira
+                      response = await this.getSeiraResponse(message);
+                  }
+
+                  const aiMessage = { 
+                      role: 'assistant', 
+                      content: response || "I'm sorry, I didn't understand that.", 
+                      timestamp: new Date(),
+                      model: this.currentModel
+                  };
+
+                  // Add AI message
+                  this.addMessageToUI(aiMessage);
+                  this.messages.push(aiMessage);
+
+                  // Save to localStorage
+                  localStorage.setItem('chatMessages', JSON.stringify(this.messages));
+                  
+              } catch (error) {
+                  console.error('Error:', error);
+                  alert('Failed to get response from AI.');
+                  
+              } finally { 
+                 // Re-enable input after processing
+                 this.input.disabled = false; 
+             }
+         }
+         
+         addMessageToUI(message) {
+             const messageDiv = document.createElement('div');
+             messageDiv.className = `message ${message.role}`;
+             messageDiv.innerText = `${message.role === 'user' ? 'You' : message.model} (${moment(message.timestamp).format("HH:mm")}): ${message.content}`;
+             this.chatContainer.appendChild(messageDiv);
+             messageDiv.scrollIntoView({ behavior: "smooth", block: "end", inline: "nearest" });
+         }
+         
+         async getOpenAIResponse(message) {
+             // Simulate an API call to OpenAI
+             return "This is a simulated response from OpenAI for your message.";
+         }
+         
+         async getGeminiResponse(message) {
+             // Simulate an API call to Gemini
+             return "This is a simulated response from Gemini for your message.";
+         }
+         
+         async getSeiraResponse(message) {
+             // Simulate an API call to Seira
+             return "This is a simulated response from Seira for your message.";
+         }
+     }
+     
+     const chatApp = new ChatApp();
+   </script>
+</body>
+</html>
